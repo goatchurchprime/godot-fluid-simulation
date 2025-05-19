@@ -1,0 +1,475 @@
+[gd_scene load_steps=45 format=3 uid="uid://bxki36iv4oreb"]
+
+[ext_resource type="Script" uid="uid://cyf45tji3o7bp" path="res://main.gd" id="1_oex3p"]
+
+[sub_resource type="Shader" id="Shader_0xm2m"]
+resource_local_to_scene = true
+code = "shader_type canvas_item;
+
+uniform float aspectRatio = 1.0;
+uniform vec3 color;
+uniform vec2 point;
+uniform float radius = 0.001;
+
+void fragment() {
+    vec2 p = UV - point.xy;
+    p.x *= aspectRatio;
+    vec3 splat = exp(-dot(p, p) / radius) * color;
+    COLOR = vec4(splat, 1.0);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h2yge"]
+resource_local_to_scene = true
+shader = SubResource("Shader_0xm2m")
+shader_parameter/aspectRatio = 0.0
+shader_parameter/color = Vector3(0, 0, 0)
+shader_parameter/point = Vector2(0, 0)
+shader_parameter/radius = 0.001
+
+[sub_resource type="Gradient" id="Gradient_0xm2m"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_h2yge"]
+gradient = SubResource("Gradient_0xm2m")
+
+[sub_resource type="Shader" id="Shader_4c57u"]
+resource_local_to_scene = true
+code = "shader_type canvas_item;
+
+uniform sampler2D splattexture;
+void fragment() {
+	vec3 velocity = texture(TEXTURE, UV).xyz;
+	vec3 splat = texture(splattexture, UV).xyz;
+	COLOR = vec4(velocity + splat, 1.0);
+}
+"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_4c57u"]
+viewport_path = NodePath("SplatVelocityViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dg77c"]
+resource_local_to_scene = true
+shader = SubResource("Shader_4c57u")
+shader_parameter/splattexture = SubResource("ViewportTexture_4c57u")
+
+[sub_resource type="ImageTexture" id="ImageTexture_ig7tw"]
+
+[sub_resource type="Shader" id="Shader_ig7tw"]
+code = "shader_type canvas_item;
+
+uniform vec2 texelsize;
+void fragment() {
+	float L = texture(TEXTURE, UV - vec2(texelsize.x, 0.0)).y;
+	float R = texture(TEXTURE, UV + vec2(texelsize.x, 0.0)).y;
+	float T = texture(TEXTURE, UV + vec2(0.0, texelsize.y)).x;
+	float B = texture(TEXTURE, UV - vec2(0.0, texelsize.y)).x;
+	float vorticity = R - L - T + B;
+	COLOR = vec4(0.5*vorticity, 0.0, 0.0, 1.0);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0xm2m"]
+shader = SubResource("Shader_ig7tw")
+shader_parameter/texelsize = Vector2(0, 0)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_h2yge"]
+viewport_path = NodePath("VelocityViewport")
+
+[sub_resource type="Shader" id="Shader_1bvp3"]
+code = "shader_type canvas_item;
+
+uniform sampler2D velocitytexture;
+// uniform sampler2D uCurl;  texture
+uniform float curl = 30.0;
+uniform float dt = 0.015;
+
+uniform vec2 texelsize;
+void fragment() {
+	float L = texture(TEXTURE, UV - vec2(texelsize.x, 0.0)).x;
+	float R = texture(TEXTURE, UV + vec2(texelsize.x, 0.0)).x;
+	float T = texture(TEXTURE, UV + vec2(0.0, texelsize.y)).x;
+	float B = texture(TEXTURE, UV - vec2(0.0, texelsize.y)).x;
+	float C = texture(TEXTURE, UV).x;
+
+	vec2 force = 0.5 * vec2(abs(T) - abs(B), abs(R) - abs(L));
+	force /= (length(force) + 0.0001);
+	force *= curl * C;
+	force.y *= -1.0;
+
+	vec2 velocity = texture(velocitytexture, UV).xy;
+
+	velocity += force * dt;
+	velocity = clamp(velocity, vec2(-1000.0,-1000.0), vec2(1000.0,1000.0));
+
+	COLOR = vec4(velocity, 0.0, 1.0);
+}
+"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_0xm2m"]
+viewport_path = NodePath("VelocityViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
+resource_local_to_scene = true
+shader = SubResource("Shader_1bvp3")
+shader_parameter/velocitytexture = SubResource("ViewportTexture_0xm2m")
+shader_parameter/curl = 30.0
+shader_parameter/dt = 0.015
+shader_parameter/texelsize = Vector2(0, 0)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_7mycd"]
+viewport_path = NodePath("CurlViewport")
+
+[sub_resource type="Shader" id="Shader_lquwl"]
+code = "shader_type canvas_item;
+
+uniform vec2 texelsize;
+void fragment() {
+	float L = texture(TEXTURE, UV - vec2(texelsize.x, 0.0)).x;
+	float R = texture(TEXTURE, UV + vec2(texelsize.x, 0.0)).x;
+	float T = texture(TEXTURE, UV + vec2(0.0, texelsize.y)).y;
+	float B = texture(TEXTURE, UV - vec2(0.0, texelsize.y)).y;
+	vec2 C = texture(TEXTURE, UV).xy;
+	if (UV.x - texelsize.x < 0.0)  L = -C.x;
+	if (UV.x + texelsize.x > 1.0)  R = -C.x;
+	if (UV.y + texelsize.y > 1.0)  T = -C.y;
+	if (UV.y - texelsize.y < 0.0)  B = -C.y;
+	float div = 0.5*(R - L + T - B);
+	COLOR = vec4(div, -div, 0.0, 1.0);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7mycd"]
+shader = SubResource("Shader_lquwl")
+shader_parameter/texelsize = Vector2(0, 0)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_272bh"]
+viewport_path = NodePath("VorticityViewport")
+
+[sub_resource type="Shader" id="Shader_7mycd"]
+resource_local_to_scene = true
+code = "shader_type canvas_item;
+
+uniform sampler2D divergencetexture;
+uniform vec2 texelsize;
+uniform float pressurefac = 1.0;
+
+void fragment() {
+	float L = texture(TEXTURE, UV - vec2(texelsize.x, 0.0)).x;
+	float R = texture(TEXTURE, UV + vec2(texelsize.x, 0.0)).x;
+	float T = texture(TEXTURE, UV + vec2(0.0, texelsize.y)).x;
+	float B = texture(TEXTURE, UV - vec2(0.0, texelsize.y)).x;
+	float divergence = texture(divergencetexture, UV).x;
+	float pressure = ((L + R + B + T)*pressurefac - divergence) * 0.25;
+	COLOR = vec4(pressure, 0.0, 0.0, 1.0);
+	//COLOR = vec4(pressure, pressurefac, divergence, 1.0);
+}
+"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_5vw27"]
+viewport_path = NodePath("DivergenceViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
+resource_local_to_scene = true
+shader = SubResource("Shader_7mycd")
+shader_parameter/divergencetexture = SubResource("ViewportTexture_5vw27")
+shader_parameter/texelsize = Vector2(0, 0)
+shader_parameter/pressurefac = 1.0
+
+[sub_resource type="ImageTexture" id="ImageTexture_h2yge"]
+
+[sub_resource type="Shader" id="Shader_272bh"]
+resource_local_to_scene = true
+code = "shader_type canvas_item;
+
+uniform sampler2D vorticitytexture;
+
+uniform vec2 texelsize;
+void fragment() {
+	float L = texture(TEXTURE, UV - vec2(texelsize.x, 0.0)).x;
+	float R = texture(TEXTURE, UV + vec2(texelsize.x, 0.0)).x;
+	float T = texture(TEXTURE, UV + vec2(0.0, texelsize.y)).x;
+	float B = texture(TEXTURE, UV - vec2(0.0, texelsize.y)).x;
+	vec2 velocity = texture(vorticitytexture, UV).xy;
+	velocity.xy -= vec2(R - L, T - B);
+	COLOR = vec4(velocity, 0.0, 1.0);
+}
+"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_1bvp3"]
+viewport_path = NodePath("VorticityViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_272bh"]
+resource_local_to_scene = true
+shader = SubResource("Shader_272bh")
+shader_parameter/vorticitytexture = SubResource("ViewportTexture_1bvp3")
+shader_parameter/texelsize = Vector2(0, 0)
+
+[sub_resource type="Gradient" id="Gradient_ig7tw"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0xm2m"]
+gradient = SubResource("Gradient_ig7tw")
+
+[sub_resource type="Shader" id="Shader_5vw27"]
+code = "shader_type canvas_item;
+
+uniform vec2 texelsize;
+uniform float dt = 0.015;
+uniform float dissipation = 0.2;
+
+void fragment() {
+	vec2 coord = UV - dt * texture(TEXTURE, UV).xy * texelsize;
+	vec4 result = texture(TEXTURE, coord);
+	float decay = 1.0 + dissipation*dt;
+	COLOR = result / decay;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
+shader = SubResource("Shader_5vw27")
+shader_parameter/texelsize = Vector2(0, 0)
+shader_parameter/dt = 0.015
+shader_parameter/dissipation = 0.2
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_lquwl"]
+viewport_path = NodePath("GradientViewport")
+
+[sub_resource type="Shader" id="Shader_efxa6"]
+code = "shader_type canvas_item;
+
+uniform float aspectRatio = 1.0;
+uniform vec3 color;
+uniform vec2 point;
+uniform float radius = 0.001;
+
+void fragment() {
+    vec2 p = UV - point.xy;
+    p.x *= aspectRatio;
+    vec3 splat = exp(-dot(p, p) / radius) * color;
+    COLOR = vec4(splat, 1.0);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ycdy4"]
+shader = SubResource("Shader_efxa6")
+shader_parameter/aspectRatio = 1.0
+shader_parameter/color = Vector3(0, 0, 0)
+shader_parameter/point = Vector2(0, 0)
+shader_parameter/radius = 0.001
+
+[sub_resource type="Gradient" id="Gradient_w48qg"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vivmo"]
+gradient = SubResource("Gradient_w48qg")
+
+[sub_resource type="Shader" id="Shader_h2yge"]
+code = "shader_type canvas_item;
+
+uniform sampler2D splattexture;
+void fragment() {
+	vec3 dyecolor = texture(TEXTURE, UV).xyz;
+	vec3 splat = texture(splattexture, UV).xyz;
+	COLOR = vec4(dyecolor + splat, 1.0);
+}
+"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_efxa6"]
+viewport_path = NodePath("SplatDyeViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1bvp3"]
+resource_local_to_scene = true
+shader = SubResource("Shader_h2yge")
+shader_parameter/splattexture = SubResource("ViewportTexture_efxa6")
+
+[sub_resource type="ImageTexture" id="ImageTexture_0xm2m"]
+
+[sub_resource type="Shader" id="Shader_kek77"]
+code = "shader_type canvas_item;
+
+uniform vec2 texelsize;
+uniform float dt = 0.015;
+uniform float dissipation = 1.0;
+uniform sampler2D velocitytexture;
+
+void fragment() {
+	vec2 coord = UV - dt * texture(velocitytexture, UV).xy * texelsize;
+	vec4 result = texture(TEXTURE, coord);
+	float decay = 1.0 + dissipation * dt;
+	COLOR = result / decay;
+	//COLOR = texture(dyetexture, UV);
+}
+"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_kek77"]
+viewport_path = NodePath("AdvectionViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_efxa6"]
+resource_local_to_scene = true
+shader = SubResource("Shader_kek77")
+shader_parameter/texelsize = Vector2(0, 0)
+shader_parameter/dt = 0.015
+shader_parameter/dissipation = 1.0
+shader_parameter/velocitytexture = SubResource("ViewportTexture_kek77")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_dg77c"]
+viewport_path = NodePath("DyeViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ig7tw"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_oex3p")
+
+[node name="SplatVelocityViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="SplatVelocityViewport"]
+material = SubResource("ShaderMaterial_h2yge")
+texture = SubResource("GradientTexture2D_h2yge")
+
+[node name="VelocityViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="VelocityViewport"]
+material = SubResource("ShaderMaterial_dg77c")
+texture = SubResource("ImageTexture_ig7tw")
+
+[node name="CurlViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="CurlViewport"]
+material = SubResource("ShaderMaterial_0xm2m")
+texture = SubResource("ViewportTexture_h2yge")
+
+[node name="VorticityViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="VorticityViewport"]
+material = SubResource("ShaderMaterial_lquwl")
+texture = SubResource("ViewportTexture_7mycd")
+
+[node name="DivergenceViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="DivergenceViewport"]
+material = SubResource("ShaderMaterial_7mycd")
+texture = SubResource("ViewportTexture_272bh")
+
+[node name="PressureNode" type="Node" parent="."]
+
+[node name="PressureViewport" type="SubViewport" parent="PressureNode"]
+disable_3d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="PressureNode/PressureViewport"]
+material = SubResource("ShaderMaterial_kek77")
+texture = SubResource("ImageTexture_h2yge")
+
+[node name="GradientViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="GradientViewport"]
+material = SubResource("ShaderMaterial_272bh")
+texture = SubResource("GradientTexture2D_0xm2m")
+
+[node name="AdvectionViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="AdvectionViewport"]
+material = SubResource("ShaderMaterial_4c57u")
+texture = SubResource("ViewportTexture_lquwl")
+
+[node name="SplatDyeViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="SplatDyeViewport"]
+material = SubResource("ShaderMaterial_ycdy4")
+texture = SubResource("GradientTexture2D_vivmo")
+
+[node name="DyeViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="DyeViewport"]
+material = SubResource("ShaderMaterial_1bvp3")
+texture = SubResource("ImageTexture_0xm2m")
+
+[node name="DyeAdvectionViewport" type="SubViewport" parent="."]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="DyeAdvectionViewport"]
+material = SubResource("ShaderMaterial_efxa6")
+texture = SubResource("ViewportTexture_dg77c")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 512.0
+offset_bottom = 512.0
+texture = SubResource("ViewportTexture_ig7tw")
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 0
+offset_right = 188.0
+offset_bottom = 31.0
+selected = 0
+item_count = 12
+popup/item_0/text = "DyeViewport"
+popup/item_0/id = 0
+popup/item_1/text = "VelocityViewport"
+popup/item_1/id = 1
+popup/item_2/text = "SplatDyeViewport"
+popup/item_2/id = 2
+popup/item_3/text = "VorticityViewport"
+popup/item_3/id = 3
+popup/item_4/text = "DivergenceViewport"
+popup/item_4/id = 4
+popup/item_5/text = "PressureViewport"
+popup/item_5/id = 5
+popup/item_6/text = "PressureViewport1"
+popup/item_6/id = 7
+popup/item_7/text = "PressureViewport9"
+popup/item_7/id = 7
+popup/item_8/text = "GradientViewport"
+popup/item_8/id = 8
+popup/item_9/text = "AdvectionViewport"
+popup/item_9/id = 9
+popup/item_10/text = "SplatVelocityViewport"
+popup/item_10/id = 10
+popup/item_11/text = "PressureViewport19"
+popup/item_11/id = 11
+
+[connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]
