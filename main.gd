@@ -28,7 +28,7 @@ func updatesize():
 				v.get_node("Sprite2D").position = rectsz/2
 			mat.set_shader_parameter("texelsize", Vector2.ONE/rectsz)
 			assert (v.render_target_clear_mode == v.CLEAR_MODE_NEVER)
-			assert (v.render_target_update_mode == v.UPDATE_ONCE)
+			#assert (v.render_target_update_mode == v.UPDATE_ONCE)
 			assert (v.disable_3d)
 			assert (v.use_hdr_2d)
 			#print(v.get_path(), mat.get_shader_parameter("texelsize"))
@@ -112,31 +112,12 @@ func _gui_input(event):
 
 func _process(delta):
 	var dt = delta
-
-	# Sum of Advection and Splat
-	$VelocityViewport/Sprite2D.texture.set_image($AdvectionViewport.get_texture().get_image())
-#	$VelocityViewport/Sprite2D.texture.set_image($VorticityViewport.get_texture().get_image())
-	$VelocityViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-	
-	$CurlViewport.set_update_mode(SubViewport.UPDATE_ONCE)
 	$VorticityViewport/Sprite2D.get_material().set_shader_parameter("dt", dt)
 	$VorticityViewport/Sprite2D.get_material().set_shader_parameter("curl", 0.2*30.0)
-	$VorticityViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-
-	$DivergenceViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-
-	$PressureNode/PressureViewport/Sprite2D.texture.set_image(lastpressureviewport.get_texture().get_image())
-	for pv in $PressureNode.get_children():
-		pv.set_update_mode(SubViewport.UPDATE_ONCE)
-
-	$GradientViewport.set_update_mode(SubViewport.UPDATE_ONCE)
 	$AdvectionViewport/Sprite2D.get_material().set_shader_parameter("dt", dt)
 	$AdvectionViewport/Sprite2D.get_material().set_shader_parameter("dissipation", 0.2)
-	$AdvectionViewport.set_update_mode(SubViewport.UPDATE_ONCE)
 
+	# Loop back copies of textures from outputs to inputs
+	$VelocityViewport/Sprite2D.texture.set_image($AdvectionViewport.get_texture().get_image())
+	$PressureNode/PressureViewport/Sprite2D.texture.set_image(lastpressureviewport.get_texture().get_image())
 	$DyeViewport/Sprite2D.texture.set_image($DyeAdvectionViewport.get_texture().get_image())
-	$DyeAdvectionViewport/Sprite2D.get_material().set_shader_parameter("dt", dt)
-	$DyeAdvectionViewport/Sprite2D.get_material().set_shader_parameter("dissipation", 1.0)
-	#$DyeViewport/Sprite2D.texture.set_image($DyeViewport.get_texture().get_image())
-	$DyeViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-	$DyeAdvectionViewport.set_update_mode(SubViewport.UPDATE_ONCE)

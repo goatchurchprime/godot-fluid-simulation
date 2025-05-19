@@ -91,10 +91,9 @@ void fragment() {
 	float B = texture(TEXTURE, UV - vec2(0.0, texelsize.y)).x;
 	float C = texture(TEXTURE, UV).x;
 
-	vec2 force = 0.5 * vec2(abs(T) - abs(B), abs(R) - abs(L));
+	vec2 force = 0.5 * vec2(abs(T) - abs(B), abs(L) - abs(R));
 	force /= (length(force) + 0.0001);
 	force *= curl * C;
-	force.y *= -1.0;
 
 	vec2 velocity = texture(velocitytexture, UV).xy;
 
@@ -338,7 +337,7 @@ texture = SubResource("GradientTexture2D_h2yge")
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="VelocityViewport"]
 material = SubResource("ShaderMaterial_dg77c")
@@ -348,7 +347,7 @@ texture = SubResource("ImageTexture_ig7tw")
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="CurlViewport"]
 material = SubResource("ShaderMaterial_0xm2m")
@@ -358,7 +357,7 @@ texture = SubResource("ViewportTexture_h2yge")
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="VorticityViewport"]
 material = SubResource("ShaderMaterial_lquwl")
@@ -368,7 +367,7 @@ texture = SubResource("ViewportTexture_7mycd")
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="DivergenceViewport"]
 material = SubResource("ShaderMaterial_7mycd")
@@ -379,7 +378,7 @@ texture = SubResource("ViewportTexture_272bh")
 [node name="PressureViewport" type="SubViewport" parent="PressureNode"]
 disable_3d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="PressureNode/PressureViewport"]
 material = SubResource("ShaderMaterial_kek77")
@@ -389,7 +388,7 @@ texture = SubResource("ImageTexture_h2yge")
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="GradientViewport"]
 material = SubResource("ShaderMaterial_272bh")
@@ -399,7 +398,7 @@ texture = SubResource("GradientTexture2D_0xm2m")
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="AdvectionViewport"]
 material = SubResource("ShaderMaterial_4c57u")
@@ -419,7 +418,7 @@ texture = SubResource("GradientTexture2D_vivmo")
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="DyeViewport"]
 material = SubResource("ShaderMaterial_1bvp3")
@@ -429,7 +428,7 @@ texture = SubResource("ImageTexture_0xm2m")
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="DyeAdvectionViewport"]
 material = SubResource("ShaderMaterial_efxa6")
