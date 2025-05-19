@@ -1,21 +1,26 @@
 extends Control
 
-
 var dyesz
 var rectsz
+var bloomsz
 const lastpressureiteration = 19
 var lastpressureviewport : Viewport
 
 func updatesize():
 	dyesz = size
 	rectsz = size*0.1
+	bloomsz = size*0.2
+	
 	print("Rectsz ", rectsz)
-	print("Dyesz ", size)
+	print("Dyesz ", dyesz)
+	print("Bloomsz ", bloomsz)
+
 	#$TextureRect.size = rectsz
 	$SplatVelocityViewport/Sprite2D.texture.width = rectsz.x
 	$SplatVelocityViewport/Sprite2D.texture.height = rectsz.y
 	$SplatDyeViewport/Sprite2D.texture.width = dyesz.x
 	$SplatDyeViewport/Sprite2D.texture.height = dyesz.y
+
 	for v in get_children():
 		if v is SubViewport:
 			var mat = v.get_node("Sprite2D").get_material()
@@ -42,14 +47,15 @@ func updatesize():
 		assert (v.render_target_clear_mode == v.CLEAR_MODE_NEVER)
 		#assert (v.render_target_update_mode == v.UPDATE_ONCE)
 		assert (v.disable_3d)
+		
 
 func _ready():
 	var pvshd = $PressureNode/PressureViewport/Sprite2D.get_material()
-	print(pvshd)
-	pvshd.set_shader_parameter("pressurefac", 0.8)
 	var dpvshd = pvshd.duplicate()
+	pvshd.set_shader_parameter("pressurefac", 0.8)
 	dpvshd.set_shader_parameter("pressurefac", 1.0)
-	print(pvshd.get_shader_parameter("pressurefac"))
+	$VorticityViewport/Sprite2D.get_material().set_shader_parameter("curl", 0.2*30.0)
+	$AdvectionViewport/Sprite2D.get_material().set_shader_parameter("dissipation", 0.2)
 	for i in range(1, lastpressureiteration+1):
 		var nname = "PressureViewport%d" % i
 		var pv = get_node_or_null(nname)
@@ -66,8 +72,8 @@ func _ready():
 	_on_option_button_item_selected(0)
 	updatesize()
 	
+	# do the startup splats
 	await get_tree().create_timer(0.1).timeout
-
 	var mat1 = $SplatVelocityViewport/Sprite2D.get_material()
 	var mat2 = $SplatDyeViewport/Sprite2D.get_material()
 	for i in range(10):
@@ -93,7 +99,6 @@ func _on_option_button_item_selected(index):
 	$TextureRect.size = size
 
 func splat(pos, vel):
-	print(pos, vel)
 	var mat1 = $SplatVelocityViewport/Sprite2D.get_material()
 	mat1.set_shader_parameter("point", pos/size)
 	mat1.set_shader_parameter("color", 60*Vector3(vel.x, vel.y, 0.0))
@@ -128,9 +133,7 @@ func _gui_input(event):
 func _process(delta):
 	var dt = delta
 	$VorticityViewport/Sprite2D.get_material().set_shader_parameter("dt", dt)
-	$VorticityViewport/Sprite2D.get_material().set_shader_parameter("curl", 0.2*30.0)
 	$AdvectionViewport/Sprite2D.get_material().set_shader_parameter("dt", dt)
-	$AdvectionViewport/Sprite2D.get_material().set_shader_parameter("dissipation", 0.2)
 
 	# Loop back copies of textures from outputs to inputs
 	$VelocityViewport/Sprite2D.texture.set_image($AdvectionViewport.get_texture().get_image())
