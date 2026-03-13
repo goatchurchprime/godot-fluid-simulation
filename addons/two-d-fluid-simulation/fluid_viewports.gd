@@ -45,6 +45,7 @@ func update_size(size):
 		
 
 func _ready():
+	# make sure that all the components are wired up correctly
 	assert ($VelocityViewport/Sprite2D.material.get_shader_parameter("splattexture").viewport_path == NodePath("SplatVelocityViewport"))
 	assert ($CurlViewport/Sprite2D.texture.viewport_path == NodePath("VelocityViewport"))
 	assert ($VorticityViewport/Sprite2D.texture.viewport_path == NodePath("CurlViewport"))
@@ -55,6 +56,15 @@ func _ready():
 	assert ($DyeViewport/Sprite2D.material.get_shader_parameter("splattexture").viewport_path == NodePath("SplatDyeViewport"))
 	assert ($DyeAdvectionViewport/Sprite2D.texture.viewport_path == NodePath("DyeViewport"))
 	assert ($DyeAdvectionViewport/Sprite2D.material.get_shader_parameter("velocitytexture").viewport_path == NodePath("AdvectionViewport"))
+	
+	for vp in [ $SplatVelocityViewport, $SplatDyeViewport ]:
+		assert (vp.render_target_clear_mode == SubViewport.CLEAR_MODE_NEVER)
+		assert (vp.render_target_update_mode == SubViewport.UPDATE_ONCE)
+		assert (vp.disable_3d)
+	for vp in [ $VelocityViewport, $CurlViewport, $VorticityViewport, $DivergenceViewport, $PressureNode/PressureViewport, $GradientViewport, $AdvectionViewport, $DyeViewport, $DyeAdvectionViewport ]:
+		assert (vp.render_target_clear_mode == SubViewport.CLEAR_MODE_NEVER)
+		assert (vp.render_target_update_mode == SubViewport.UPDATE_WHEN_PARENT_VISIBLE)
+		assert (vp.disable_3d)
 	
 	var pvshd = $PressureNode/PressureViewport/Sprite2D.get_material()
 	var dpvshd = pvshd.duplicate()
