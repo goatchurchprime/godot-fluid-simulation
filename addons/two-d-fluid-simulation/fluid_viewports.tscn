@@ -1,0 +1,250 @@
+[gd_scene format=3 uid="uid://xtho5gxeed1j"]
+
+[ext_resource type="Script" uid="uid://o51r3d8vlv1a" path="res://addons/two-d-fluid-simulation/fluid_viewports.gd" id="1_mm1up"]
+[ext_resource type="Shader" uid="uid://bkd6qtxtq2nkg" path="res://addons/two-d-fluid-simulation/splat_velocity.gdshader" id="2_mm1up"]
+[ext_resource type="Shader" uid="uid://chqckahfscu8w" path="res://addons/two-d-fluid-simulation/velocity.gdshader" id="3_rugxh"]
+[ext_resource type="Shader" uid="uid://bm0g5x61nqobf" path="res://addons/two-d-fluid-simulation/curl.gdshader" id="4_248j5"]
+[ext_resource type="Shader" uid="uid://blh6m7tbo3lfy" path="res://addons/two-d-fluid-simulation/vorticity.gdshader" id="5_o1f2h"]
+[ext_resource type="Shader" uid="uid://o60yga8ivvyt" path="res://addons/two-d-fluid-simulation/divergence.gdshader" id="6_mnmum"]
+[ext_resource type="Shader" uid="uid://bck4tvo6sr5yc" path="res://addons/two-d-fluid-simulation/pressure.gdshader" id="7_hxjk1"]
+[ext_resource type="Shader" uid="uid://dkbgmn3bnlww6" path="res://addons/two-d-fluid-simulation/gradient.gdshader" id="8_b58gw"]
+[ext_resource type="Shader" uid="uid://bee4x63l5df6d" path="res://addons/two-d-fluid-simulation/advection.gdshader" id="9_v58y7"]
+[ext_resource type="Shader" uid="uid://dwobtlyfve0ah" path="res://addons/two-d-fluid-simulation/splat_dye.gdshader" id="10_6ojcp"]
+[ext_resource type="Shader" uid="uid://b0s4uq22yi756" path="res://addons/two-d-fluid-simulation/dye.gdshader" id="11_vqk0r"]
+[ext_resource type="Shader" uid="uid://cgv4hfumfij5n" path="res://addons/two-d-fluid-simulation/dye_advection.gdshader" id="12_utx11"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h2yge"]
+resource_local_to_scene = true
+shader = ExtResource("2_mm1up")
+shader_parameter/aspectRatio = 0.0
+shader_parameter/color = Vector3(0, 0, 0)
+shader_parameter/point = Vector2(0, 0)
+shader_parameter/radius = 0.001
+
+[sub_resource type="Gradient" id="Gradient_0xm2m"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_h2yge"]
+gradient = SubResource("Gradient_0xm2m")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_4c57u"]
+viewport_path = NodePath("SplatVelocityViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dg77c"]
+resource_local_to_scene = true
+shader = ExtResource("3_rugxh")
+shader_parameter/splattexture = SubResource("ViewportTexture_4c57u")
+
+[sub_resource type="ImageTexture" id="ImageTexture_ig7tw"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0xm2m"]
+shader = ExtResource("4_248j5")
+shader_parameter/texelsize = Vector2(0, 0)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_h2yge"]
+viewport_path = NodePath("VelocityViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_0xm2m"]
+viewport_path = NodePath("VelocityViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
+resource_local_to_scene = true
+shader = ExtResource("5_o1f2h")
+shader_parameter/velocitytexture = SubResource("ViewportTexture_0xm2m")
+shader_parameter/curl = 30.0
+shader_parameter/dt = 0.015
+shader_parameter/texelsize = Vector2(0, 0)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_7mycd"]
+viewport_path = NodePath("CurlViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7mycd"]
+shader = ExtResource("6_mnmum")
+shader_parameter/texelsize = Vector2(0, 0)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_272bh"]
+viewport_path = NodePath("VorticityViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_5vw27"]
+viewport_path = NodePath("DivergenceViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
+resource_local_to_scene = true
+shader = ExtResource("7_hxjk1")
+shader_parameter/divergencetexture = SubResource("ViewportTexture_5vw27")
+shader_parameter/texelsize = Vector2(0, 0)
+shader_parameter/pressurefac = 1.0
+
+[sub_resource type="ImageTexture" id="ImageTexture_h2yge"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_1bvp3"]
+viewport_path = NodePath("VorticityViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_272bh"]
+resource_local_to_scene = true
+shader = ExtResource("8_b58gw")
+shader_parameter/vorticitytexture = SubResource("ViewportTexture_1bvp3")
+shader_parameter/texelsize = Vector2(0, 0)
+
+[sub_resource type="Gradient" id="Gradient_ig7tw"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0xm2m"]
+gradient = SubResource("Gradient_ig7tw")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
+shader = ExtResource("9_v58y7")
+shader_parameter/texelsize = Vector2(0, 0)
+shader_parameter/dt = 0.015
+shader_parameter/dissipation = 0.2
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_lquwl"]
+viewport_path = NodePath("GradientViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ycdy4"]
+shader = ExtResource("10_6ojcp")
+shader_parameter/aspectRatio = 1.0
+shader_parameter/color = Vector3(0, 0, 0)
+shader_parameter/point = Vector2(0, 0)
+shader_parameter/radius = 0.001
+
+[sub_resource type="Gradient" id="Gradient_w48qg"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vivmo"]
+gradient = SubResource("Gradient_w48qg")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_efxa6"]
+viewport_path = NodePath("SplatDyeViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1bvp3"]
+resource_local_to_scene = true
+shader = ExtResource("11_vqk0r")
+shader_parameter/splattexture = SubResource("ViewportTexture_efxa6")
+
+[sub_resource type="ImageTexture" id="ImageTexture_0xm2m"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_kek77"]
+viewport_path = NodePath("AdvectionViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_efxa6"]
+resource_local_to_scene = true
+shader = ExtResource("12_utx11")
+shader_parameter/texelsize = Vector2(0, 0)
+shader_parameter/dt = 0.015
+shader_parameter/dissipation = 1.0
+shader_parameter/velocitytexture = SubResource("ViewportTexture_kek77")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_dg77c"]
+viewport_path = NodePath("DyeViewport")
+
+[node name="FluidViewports" type="Node" unique_id=2001552246]
+script = ExtResource("1_mm1up")
+
+[node name="SplatVelocityViewport" type="SubViewport" parent="." unique_id=1924276376]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="SplatVelocityViewport" unique_id=184135490]
+material = SubResource("ShaderMaterial_h2yge")
+texture = SubResource("GradientTexture2D_h2yge")
+
+[node name="VelocityViewport" type="SubViewport" parent="." unique_id=1011434992]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="VelocityViewport" unique_id=1188440850]
+material = SubResource("ShaderMaterial_dg77c")
+texture = SubResource("ImageTexture_ig7tw")
+
+[node name="CurlViewport" type="SubViewport" parent="." unique_id=1745956450]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="CurlViewport" unique_id=235041997]
+material = SubResource("ShaderMaterial_0xm2m")
+texture = SubResource("ViewportTexture_h2yge")
+
+[node name="VorticityViewport" type="SubViewport" parent="." unique_id=1085258166]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="VorticityViewport" unique_id=1217716752]
+material = SubResource("ShaderMaterial_lquwl")
+texture = SubResource("ViewportTexture_7mycd")
+
+[node name="DivergenceViewport" type="SubViewport" parent="." unique_id=1478184883]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="DivergenceViewport" unique_id=2035804713]
+material = SubResource("ShaderMaterial_7mycd")
+texture = SubResource("ViewportTexture_272bh")
+
+[node name="PressureNode" type="Node" parent="." unique_id=1947013994]
+
+[node name="PressureViewport" type="SubViewport" parent="PressureNode" unique_id=808681983]
+disable_3d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="PressureNode/PressureViewport" unique_id=827195161]
+material = SubResource("ShaderMaterial_kek77")
+texture = SubResource("ImageTexture_h2yge")
+
+[node name="GradientViewport" type="SubViewport" parent="." unique_id=1809625541]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="GradientViewport" unique_id=125176099]
+material = SubResource("ShaderMaterial_272bh")
+texture = SubResource("GradientTexture2D_0xm2m")
+
+[node name="AdvectionViewport" type="SubViewport" parent="." unique_id=1817402652]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="AdvectionViewport" unique_id=1215402095]
+material = SubResource("ShaderMaterial_4c57u")
+texture = SubResource("ViewportTexture_lquwl")
+
+[node name="SplatDyeViewport" type="SubViewport" parent="." unique_id=1258749471]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="SplatDyeViewport" unique_id=328344152]
+material = SubResource("ShaderMaterial_ycdy4")
+texture = SubResource("GradientTexture2D_vivmo")
+
+[node name="DyeViewport" type="SubViewport" parent="." unique_id=1018465441]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="DyeViewport" unique_id=1753523021]
+material = SubResource("ShaderMaterial_1bvp3")
+texture = SubResource("ImageTexture_0xm2m")
+
+[node name="DyeAdvectionViewport" type="SubViewport" parent="." unique_id=1981617054]
+disable_3d = true
+use_hdr_2d = true
+render_target_clear_mode = 1
+render_target_update_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="DyeAdvectionViewport" unique_id=2001238305]
+material = SubResource("ShaderMaterial_efxa6")
+texture = SubResource("ViewportTexture_dg77c")

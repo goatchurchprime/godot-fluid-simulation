@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://bxki36iv4oreb"]
+[gd_scene format=3 uid="uid://bxki36iv4oreb"]
 
 [ext_resource type="Script" uid="uid://cyf45tji3o7bp" path="res://main.gd" id="1_oex3p"]
 
@@ -313,8 +313,9 @@ shader_parameter/velocitytexture = SubResource("ViewportTexture_kek77")
 viewport_path = NodePath("DyeViewport")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_ig7tw"]
+viewport_path = NodePath("DyeViewport")
 
-[node name="Main" type="Control"]
+[node name="Main" type="Control" unique_id=903305791]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -323,124 +324,124 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_oex3p")
 
-[node name="SplatVelocityViewport" type="SubViewport" parent="."]
+[node name="SplatVelocityViewport" type="SubViewport" parent="." unique_id=1361255566]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 1
 
-[node name="Sprite2D" type="Sprite2D" parent="SplatVelocityViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="SplatVelocityViewport" unique_id=1907578017]
 material = SubResource("ShaderMaterial_h2yge")
 texture = SubResource("GradientTexture2D_h2yge")
 
-[node name="VelocityViewport" type="SubViewport" parent="."]
+[node name="VelocityViewport" type="SubViewport" parent="." unique_id=1187699608]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="VelocityViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="VelocityViewport" unique_id=1186793344]
 material = SubResource("ShaderMaterial_dg77c")
 texture = SubResource("ImageTexture_ig7tw")
 
-[node name="CurlViewport" type="SubViewport" parent="."]
+[node name="CurlViewport" type="SubViewport" parent="." unique_id=298580238]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="CurlViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="CurlViewport" unique_id=953532253]
 material = SubResource("ShaderMaterial_0xm2m")
 texture = SubResource("ViewportTexture_h2yge")
 
-[node name="VorticityViewport" type="SubViewport" parent="."]
+[node name="VorticityViewport" type="SubViewport" parent="." unique_id=1275850640]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="VorticityViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="VorticityViewport" unique_id=977706024]
 material = SubResource("ShaderMaterial_lquwl")
 texture = SubResource("ViewportTexture_7mycd")
 
-[node name="DivergenceViewport" type="SubViewport" parent="."]
+[node name="DivergenceViewport" type="SubViewport" parent="." unique_id=1564872212]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="DivergenceViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="DivergenceViewport" unique_id=967695621]
 material = SubResource("ShaderMaterial_7mycd")
 texture = SubResource("ViewportTexture_272bh")
 
-[node name="PressureNode" type="Node" parent="."]
+[node name="PressureNode" type="Node" parent="." unique_id=1814527400]
 
-[node name="PressureViewport" type="SubViewport" parent="PressureNode"]
+[node name="PressureViewport" type="SubViewport" parent="PressureNode" unique_id=74533413]
 disable_3d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="PressureNode/PressureViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="PressureNode/PressureViewport" unique_id=284321808]
 material = SubResource("ShaderMaterial_kek77")
 texture = SubResource("ImageTexture_h2yge")
 
-[node name="GradientViewport" type="SubViewport" parent="."]
+[node name="GradientViewport" type="SubViewport" parent="." unique_id=307984218]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="GradientViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="GradientViewport" unique_id=834090708]
 material = SubResource("ShaderMaterial_272bh")
 texture = SubResource("GradientTexture2D_0xm2m")
 
-[node name="AdvectionViewport" type="SubViewport" parent="."]
+[node name="AdvectionViewport" type="SubViewport" parent="." unique_id=199655309]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="AdvectionViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="AdvectionViewport" unique_id=978644571]
 material = SubResource("ShaderMaterial_4c57u")
 texture = SubResource("ViewportTexture_lquwl")
 
-[node name="SplatDyeViewport" type="SubViewport" parent="."]
+[node name="SplatDyeViewport" type="SubViewport" parent="." unique_id=2085600868]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 1
 
-[node name="Sprite2D" type="Sprite2D" parent="SplatDyeViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="SplatDyeViewport" unique_id=1708001942]
 material = SubResource("ShaderMaterial_ycdy4")
 texture = SubResource("GradientTexture2D_vivmo")
 
-[node name="DyeViewport" type="SubViewport" parent="."]
+[node name="DyeViewport" type="SubViewport" parent="." unique_id=480425309]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="DyeViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="DyeViewport" unique_id=1484254385]
 material = SubResource("ShaderMaterial_1bvp3")
 texture = SubResource("ImageTexture_0xm2m")
 
-[node name="DyeAdvectionViewport" type="SubViewport" parent="."]
+[node name="DyeAdvectionViewport" type="SubViewport" parent="." unique_id=1989201291]
 disable_3d = true
 use_hdr_2d = true
 render_target_clear_mode = 1
 render_target_update_mode = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="DyeAdvectionViewport"]
+[node name="Sprite2D" type="Sprite2D" parent="DyeAdvectionViewport" unique_id=1734182676]
 material = SubResource("ShaderMaterial_efxa6")
 texture = SubResource("ViewportTexture_dg77c")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1886931380]
 layout_mode = 0
 offset_right = 512.0
 offset_bottom = 512.0
 texture = SubResource("ViewportTexture_ig7tw")
 
-[node name="OptionButton" type="OptionButton" parent="."]
+[node name="OptionButton" type="OptionButton" parent="." unique_id=803326292]
 layout_mode = 0
 offset_right = 188.0
 offset_bottom = 31.0

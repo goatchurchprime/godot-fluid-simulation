@@ -1,4 +1,4 @@
-extends Control
+extends Node
 
 var dyesz
 var rectsz
@@ -6,16 +6,11 @@ var bloomsz
 const lastpressureiteration = 19
 var lastpressureviewport : Viewport
 
-func updatesize():
+func update_size(size):
 	dyesz = size
 	rectsz = size*0.1
 	bloomsz = size*0.2
 	
-	print("Rectsz ", rectsz)
-	print("Dyesz ", dyesz)
-	print("Bloomsz ", bloomsz)
-
-	#$TextureRect.size = rectsz
 	$SplatVelocityViewport/Sprite2D.texture.width = rectsz.x
 	$SplatVelocityViewport/Sprite2D.texture.height = rectsz.y
 	$SplatDyeViewport/Sprite2D.texture.width = dyesz.x
@@ -60,7 +55,7 @@ func _ready():
 	assert ($DyeViewport/Sprite2D.material.get_shader_parameter("splattexture").viewport_path == NodePath("SplatDyeViewport"))
 	assert ($DyeAdvectionViewport/Sprite2D.texture.viewport_path == NodePath("DyeViewport"))
 	assert ($DyeAdvectionViewport/Sprite2D.material.get_shader_parameter("velocitytexture").viewport_path == NodePath("AdvectionViewport"))
-
+	
 	var pvshd = $PressureNode/PressureViewport/Sprite2D.get_material()
 	var dpvshd = pvshd.duplicate()
 	pvshd.set_shader_parameter("pressurefac", 0.8)
@@ -80,63 +75,33 @@ func _ready():
 		#vtprev.set_viewport_path_in_scene(get_path_to($PressureNode.get_child(i - 1)))
 		lastpressureviewport = pv
 	$GradientViewport/Sprite2D.texture = lastpressureviewport.get_texture()
-	_on_option_button_item_selected(0)
-	updatesize()
-	
-	# do the startup splats
-	await get_tree().create_timer(0.1).timeout
-	var mat1 = $SplatVelocityViewport/Sprite2D.get_material()
-	var mat2 = $SplatDyeViewport/Sprite2D.get_material()
-	for i in range(10):
-		mat2.set_shader_parameter("color", Color.from_hsv(randf(), 0.5, 1.0)*3)
-		splat(Vector2(size.x*randf(), size.y*randf()), Vector2(randf_range(-19,19),randf_range(-19,19)))
-		$SplatVelocityViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-		$SplatDyeViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-		await get_tree().process_frame
-	mat1.set_shader_parameter("color", Color(0,0,0,0))
-	mat2.set_shader_parameter("color", Color(0,0,0,0))
-	$SplatVelocityViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-	$SplatDyeViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-
-func _on_option_button_item_selected(index):
-	var selviewport = $OptionButton.get_item_text(index)
-	if selviewport.begins_with("PressureViewport"):
-#		$TextureRect.texture = lastpressureviewport.get_texture()
-		var vp = $PressureNode.get_node(selviewport)
-		var vpt = vp.get_node("Sprite2D").get_texture()
-		$TextureRect.texture = vp.get_texture()
-	else:
-		$TextureRect.texture = get_node(selviewport).get_texture()
-	$TextureRect.size = size
 
 func splat(pos, vel):
 	var mat1 = $SplatVelocityViewport/Sprite2D.get_material()
-	mat1.set_shader_parameter("point", pos/size)
+	mat1.set_shader_parameter("point", pos)
 	mat1.set_shader_parameter("color", 60*Vector3(vel.x, vel.y, 0.0))
 	mat1.set_shader_parameter("radius", 0.001)
 	$SplatVelocityViewport.set_update_mode(SubViewport.UPDATE_ONCE)
 
 	var mat2 = $SplatDyeViewport/Sprite2D.get_material()
 	#mat2.set_shader_parameter("color", Vector3(0.0, 0.0, 1.0))
-	mat2.set_shader_parameter("point", pos/size)
+	mat2.set_shader_parameter("point", pos)
 	mat2.set_shader_parameter("radius", 0.002)
 	$SplatDyeViewport.set_update_mode(SubViewport.UPDATE_ONCE)
 
-func _gui_input(event):
-	if event is InputEventMouseButton and event.is_pressed():
-		var mat2 = $SplatDyeViewport/Sprite2D.get_material()
-		mat2.set_shader_parameter("color", Color.from_hsv(randf(), 0.5, 1.0))
-		mat2.set_shader_parameter("radius", 0.001)
-	elif event is InputEventMouseButton and not event.is_pressed():
-		var mat1 = $SplatVelocityViewport/Sprite2D.get_material()
-		mat1.set_shader_parameter("color", Color(0,0,0,0))
-		var mat2 = $SplatDyeViewport/Sprite2D.get_material()
-		mat2.set_shader_parameter("color", Color(0,0,0,0))
-		$SplatVelocityViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-		$SplatDyeViewport.set_update_mode(SubViewport.UPDATE_ONCE)
-		
-	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		splat(event.position, event.relative)
+func start_dye(color):
+	var mat2 = $SplatDyeViewport/Sprite2D.get_material()
+	mat2.set_shader_parameter("color", color)
+	mat2.set_shader_parameter("radius", 0.001)
+
+func stop_dye():
+	var mat1 = $SplatVelocityViewport/Sprite2D.get_material()
+	mat1.set_shader_parameter("color", Color(0,0,0,0))
+	var mat2 = $SplatDyeViewport/Sprite2D.get_material()
+	mat2.set_shader_parameter("color", Color(0,0,0,0))
+	$SplatVelocityViewport.set_update_mode(SubViewport.UPDATE_ONCE)
+	$SplatDyeViewport.set_update_mode(SubViewport.UPDATE_ONCE)
+
 
 # see https://github.com/godotengine/godot/pull/51709 for details
 # for doing the HDR in full floating point (there's an option in godot3 for this)
