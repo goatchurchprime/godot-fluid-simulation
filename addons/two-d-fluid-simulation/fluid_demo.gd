@@ -23,7 +23,12 @@ func _on_option_button_item_selected(index):
 		var vp = $FluidViewports.get_node(selviewport)
 		print(vp.use_hdr_2d)
 		$TextureRect.texture = vp.get_texture()
+		print("vpvp ", vp)
+		print("vpvp ", vp.get_texture())
+		print("texture ", $TextureRect.texture)
 	$TextureRect.size = size
+	print("vpvp ", $TextureRect.texture.viewport_path)
+	print("size ", size)
 
 func _gui_input(event):
 	if event is InputEventMouseButton:
