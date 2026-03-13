@@ -11,3 +11,6 @@ decreasing viewport frame sizes.  The code is here:
 https://github.com/PavelDoGreat/WebGL-Fluid-Simulation/blob/master/script.js
 
 ![image](https://github.com/user-attachments/assets/698a1a6c-1570-4af3-bce0-5b25e21fb3a6)
+
+It would be amazing if this could be worked up into something that approached what can be found in the CameraTest world in VRChat where it (a) takes the colours from your avatar as it passes through the fluid plane, and (b) illuminates the world with the light from the fluid.
+    https://youtu.be/uL1woSRyNJ8?si=gA6iDjMgZIf4Rd6m&t=84
