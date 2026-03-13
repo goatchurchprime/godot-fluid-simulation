@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://churte2f2govv"]
+
+[ext_resource type="Script" uid="uid://n6vj5yfmunsk" path="res://addons/two-d-fluid-simulation/fluidplane_3d.gd" id="1_65k2r"]
+[ext_resource type="PackedScene" uid="uid://xtho5gxeed1j" path="res://addons/two-d-fluid-simulation/fluid_viewports.tscn" id="2_f5oya"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_k6ky4"]
+size = Vector2(2, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_65k2r"]
+emission_enabled = true
+
+[node name="FluidPlane_3D" type="Node3D" unique_id=473189007]
+script = ExtResource("1_65k2r")
+
+[node name="FluidPlaneMesh" type="MeshInstance3D" parent="." unique_id=1675669643]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14478481, 0.30195212, -1.4308678)
+mesh = SubResource("QuadMesh_k6ky4")
+surface_material_override/0 = SubResource("StandardMaterial3D_65k2r")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=249249186]
+
+[node name="FluidViewports" parent="." unique_id=2001552246 instance=ExtResource("2_f5oya")]
